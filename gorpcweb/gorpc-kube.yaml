@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deploy
+  labels:
+    fun: redis
+    env: test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      env: redisv1
+  template:
+    metadata:
+      labels:
+        env: redisv1
+        other: show
+    spec:
+      containers:
+      - name: redis-dep
+        image: redis:5.0.4-alpine3.9
+      nodeSelector:
+        kubernetes.io/hostname: kube-node02
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  ports:
+    - port: 6379
+  selector:
+    env: redisv1
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: math-deploy
+  labels:
+    fun: math
+    env: test
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      env: mathv1
+  template:
+    metadata:
+      labels:
+        env: mathv1
+        other: show
+    spec:
+      containers:
+      - name: gorpcsvc-dep
+        image: wpxun/gorpcsvc:v1
+        ports:
+        - containerPort: 1234
+      nodeSelector:
+        kubernetes.io/hostname: kube-node02
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gorpcsvc
+spec:
+  ports:
+    - port: 1234
+      targetPort: 1234
+  selector:
+    env: mathv1
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goweb-deploy
+  labels:
+    fun: goweb
+    env: test
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      env: gowebv1
+  template:
+    metadata:
+      labels:
+        env: gowebv1
+        other: show
+    spec:
+      containers:
+      - name: goweb-dep
+        image: wpxun/gorpcweb:v1
+        ports:
+        - containerPort: 80
+      nodeSelector:
+        kubernetes.io/hostname: kube-node01
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: goweb-service
+spec:
+  type: NodePort
+  ports:
+    - port: 81
+      targetPort: 80
+      nodePort: 30001
+  selector:
+    env: gowebv1

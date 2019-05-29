@@ -6,4 +6,4 @@ Redis:
   Database: 0 #数据库，默认0
 
 MathRPC:
-  Address: localhost:1234
+  Address: gorpcsvc:1234
