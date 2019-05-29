@@ -1,0 +1,32 @@
+version: "3.7"
+services:
+  gorpcweb:
+    build: .
+    image: wpxun/gorpcweb:v1
+    environment:
+      FROMHOSTNAME: $HOSTNAME
+    ports:
+      - target: 80
+        published: 80
+    networks:
+      - counter-net
+
+  gorpcsvc:
+    build: .
+    image: wpxun/gorpcsvc:v1
+    ports:
+      - target: 1234
+        published: 1234
+    networks:
+      - counter-net
+
+  redis:
+    image: "redis:5.0.4-alpine3.9"
+    networks:
+      - counter-net
+
+networks:
+  counter-net:
+
+volumes:
+  counter-vol:

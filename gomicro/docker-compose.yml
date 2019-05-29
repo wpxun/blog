@@ -1,0 +1,23 @@
+version: "3.7"
+services:
+  gomicro:
+    build: .
+    image: wpxun/gomicro:v1
+    environment:
+      FROMHOSTNAME: $HOSTNAME
+    ports:
+      - target: 80
+        published: 80
+    networks:
+      - counter-net
+
+  redis:
+    image: "redis:5.0.4-alpine3.9"
+    networks:
+      - counter-net
+
+networks:
+  counter-net:
+
+volumes:
+  counter-vol:

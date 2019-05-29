@@ -1,0 +1,39 @@
+version: "3.7"
+services:
+  gomicro:
+    image: "wpxun/multigo:v1"
+    ports:
+      - target: 80
+        published: 80
+    networks:
+      - counter-net
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      replicas: 8
+      update_config:
+        parallelism: 2
+        failure_action: rollback
+
+  redis:
+    image: "redis:5.0.4-alpine3.9"
+    networks:
+      - counter-net
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints:
+          - 'node.role == worker'
+
+networks:
+  counter-net:
+
+volumes:
+  counter-vol:

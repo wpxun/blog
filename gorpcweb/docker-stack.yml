@@ -1,0 +1,60 @@
+version: "3.7"
+services:
+  gorpcweb:
+    image: "wpxun/gorpcweb:v1"
+    ports:
+      - target: 80
+        published: 80
+    networks:
+      - counter-net
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      replicas: 5
+      update_config:
+        parallelism: 2
+        failure_action: rollback
+
+  gorpcsvc:
+    image: "wpxun/gorpcsvc:v1"
+    ports:
+      - target: 1234
+        published: 1234
+    networks:
+      - counter-net
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      replicas: 3
+      update_config:
+        parallelism: 2
+        failure_action: rollback
+      placement:
+        constraints:
+          - 'node.role == worker'
+
+  redis:
+    image: "redis:5.0.4-alpine3.9"
+    networks:
+      - counter-net
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints:
+          - 'node.role == worker'
+
+networks:
+  counter-net:
+
+volumes:
+  counter-vol:

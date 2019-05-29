@@ -1,0 +1,9 @@
+Redis:
+  DialTimeout: 2000000000 #连接超时设定(s)，默认200ms
+  Network: tcp #网络连接协议
+  Address: redis:6379 #连接地址(带端口)
+  Password:  #密码
+  Database: 0 #数据库，默认0
+
+MathRPC:
+  Address: localhost:1234
