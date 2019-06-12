@@ -20,7 +20,7 @@ spec:
       - name: redis-dep
         image: redis:5.0.4-alpine3.9
       nodeSelector:
-        kubernetes.io/hostname: kube-node02
+        kubernetes.io/hostname: instance-2
 
 ---
 apiVersion: v1
@@ -58,7 +58,7 @@ spec:
         ports:
         - containerPort: 1234
       nodeSelector:
-        kubernetes.io/hostname: kube-node02
+        kubernetes.io/hostname: instance-2
 
 ---
 apiVersion: v1
@@ -76,20 +76,20 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: goweb-deploy
+  name: goweb-deploy-v1
   labels:
     fun: goweb
     env: test
 spec:
-  replicas: 5
+  replicas: 2
   selector:
     matchLabels:
-      env: gowebv1
+      app: goweb
   template:
     metadata:
       labels:
-        env: gowebv1
-        other: show
+        app: goweb
+        version: showv1
     spec:
       containers:
       - name: goweb-dep
@@ -97,18 +97,48 @@ spec:
         ports:
         - containerPort: 80
       nodeSelector:
-        kubernetes.io/hostname: kube-node01
+        kubernetes.io/hostname: instance-3
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goweb-deploy-v2
+  labels:
+    fun: goweb
+    env: test
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: goweb
+  template:
+    metadata:
+      labels:
+        app: goweb
+        version: showv2
+    spec:
+      containers:
+      - name: goweb-dep
+        image: wpxun/gorpcweb:v1
+        ports:
+        - containerPort: 80
+      nodeSelector:
+        kubernetes.io/hostname: instance-3
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: goweb-service
+  name: goapi
+  labels:
+    env: goapi
 spec:
   type: NodePort
   ports:
-    - port: 81
+    - name: http
+      port: 81
       targetPort: 80
       nodePort: 30001
   selector:
-    env: gowebv1
+    app: goweb
