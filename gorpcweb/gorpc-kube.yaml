@@ -17,8 +17,8 @@ spec:
         other: show
     spec:
       containers:
-      - name: redis-dep
-        image: redis:5.0.4-alpine3.9
+        - name: redis-dep
+          image: redis:5.0.4-alpine3.9
       nodeSelector:
         kubernetes.io/hostname: instance-2
 
@@ -53,10 +53,10 @@ spec:
         other: show
     spec:
       containers:
-      - name: gorpcsvc-dep
-        image: wpxun/gorpcsvc:v1
-        ports:
-        - containerPort: 1234
+        - name: gorpcsvc-dep
+          image: wpxun/gorpcsvc:v1
+          ports:
+            - containerPort: 1234
       nodeSelector:
         kubernetes.io/hostname: instance-2
 
@@ -92,10 +92,10 @@ spec:
         version: showv1
     spec:
       containers:
-      - name: goweb-dep
-        image: wpxun/gorpcweb:v1
-        ports:
-        - containerPort: 80
+        - name: goweb-dep
+          image: wpxun/gorpcweb:v1
+          ports:
+            - containerPort: 80
       nodeSelector:
         kubernetes.io/hostname: instance-3
 
@@ -119,10 +119,64 @@ spec:
         version: showv2
     spec:
       containers:
-      - name: goweb-dep
-        image: wpxun/gorpcweb:v1
-        ports:
-        - containerPort: 80
+        - name: goweb-dep
+          image: wpxun/gorpcweb:v1
+          ports:
+            - containerPort: 80
+      nodeSelector:
+        kubernetes.io/hostname: instance-3
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goweb-deploy-v3
+  labels:
+    fun: goweb
+    env: test
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gowebsec
+  template:
+    metadata:
+      labels:
+        app: gowebsec
+        version: showv1
+    spec:
+      containers:
+        - name: goweb-dep
+          image: wpxun/gorpcweb:v2
+          ports:
+            - containerPort: 8087
+      nodeSelector:
+        kubernetes.io/hostname: instance-3
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goweb-deploy-v4
+  labels:
+    fun: goweb
+    env: test
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: gowebsec
+  template:
+    metadata:
+      labels:
+        app: gowebsec
+        version: showv2
+    spec:
+      containers:
+        - name: goweb-dep
+          image: wpxun/gorpcweb:v2
+          ports:
+            - containerPort: 8087
       nodeSelector:
         kubernetes.io/hostname: instance-3
 
@@ -142,3 +196,20 @@ spec:
       nodePort: 30001
   selector:
     app: goweb
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: goapisec
+  labels:
+    env: goapi
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      port: 82
+      targetPort: 8087
+      nodePort: 30002
+  selector:
+    app: gowebsec
