@@ -62,12 +62,23 @@ func main() {
 	//要断言的变量必须是接口，如果不是接口可以用 interface{}() 转换
 	if xx, ok := testPi.(*MyInt); ok {
 		xx.mp()
+	} else {
+		fmt.Println("xxxxx1")
 	}
 	if xx, ok := testPs.(*MyInt); ok {
 		xx.mv()
+	} else {
+		fmt.Println("xxxxx2")
 	}
 	if xx, ok := testVs.(MyInt); ok {
 		xx.mv()
+	} else {
+		fmt.Println("xxxxx3")
+	}
+	if xx, ok := testVs.(*MyInt); ok {
+		xx.mv()
+	} else {
+		fmt.Println("xxxxx4")
 	}
 
 }
