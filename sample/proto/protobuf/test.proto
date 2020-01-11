@@ -1,0 +1,9 @@
+syntax = "proto2";
+
+package protobuf1;
+
+message HelloWorld {
+    required int32     id = 1;
+    required string    name = 2;
+    optional int32     opt = 3;
+}
