@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/wpxun/gomicro/service"
+	"github.com/wpxun/blog/gomicro/service"
 	"log"
 	"net/http"
 	"net/rpc"
